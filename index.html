@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Cek History ID Card</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #fafafa; }
+    h2 { color: #333; }
+    input, button { padding: 8px 12px; margin: 5px 0; font-size: 14px; }
+    button {
+      background: #007bff; color: white; border: none; cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover { background: #0056b3; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f2f2f2; font-weight: bold; }
+    tr:nth-child(even) { background: #f9f9f9; }
+  </style>
+</head>
+<body>
+  <h2>Cek History ID Card</h2>
+  <input type="text" id="idInput" placeholder="Masukkan No ID...">
+  <button onclick="search()">Cari</button>
+
+  <div id="output"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxxxx/exec"; // ganti dengan URL kamu
+
+    async function search() {
+      const id = document.getElementById('idInput').value;
+      if (!id) {
+        document.getElementById('output').innerHTML = "<p style='color:red'>Masukkan No ID dulu!</p>";
+        return;
+      }
+
+      document.getElementById('output').innerHTML = "<p>Sedang mencari data...</p>";
+
+      try {
+        const res = await fetch(`${API_URL}?id=${id}`);
+        const data = await res.json();
+
+        if (data.rows.length === 0) {
+          document.getElementById('output').innerHTML = "<p style='color:red'>Data tidak ditemukan.</p>";
+          return;
+        }
+
+        let html = "<table><tr>";
+        data.header.forEach(h => { html += "<th>" + h + "</th>"; });
+        html += "</tr>";
+
+        data.rows.forEach(r => {
+          html += "<tr>";
+          r.forEach(c => { html += "<td>" + (c || '-') + "</td>"; });
+          html += "</tr>";
+        });
+
+        html += "</table>";
+        document.getElementById('output').innerHTML = html;
+
+      } catch (err) {
+        document.getElementById('output').innerHTML = "<p style='color:red'>Error mengambil data.</p>";
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
