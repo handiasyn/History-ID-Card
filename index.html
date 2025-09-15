@@ -6,82 +6,122 @@
   <title>Cek History Realisasi ID Card</title>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f8f9fa;
+      background: url(https://drive.google.com/file/d/1MxZmk6UhBQB9e2ofSenN7waGDLLryNO6/view?usp=sharing) no-repeat center center fixed;
+      background-size: cover;
+      color: white;
     }
-    h2 {
+    .overlay {
+      background: rgba(0,0,0,0.4);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
+      padding: 20px;
     }
-    input {
-      padding: 8px;
-      width: 250px;
-      margin-right: 10px;
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
     }
-    button {
-      padding: 8px 15px;
+    .search-box {
+      display: flex;
+      background: white;
+      border-radius: 30px;
+      overflow: hidden;
+      margin-top: 20px;
+      width: 350px;
+      max-width: 90%;
+    }
+    .search-box input {
+      border: none;
+      padding: 12px 15px;
+      flex: 1;
+      outline: none;
+      font-size: 16px;
+    }
+    .search-box button {
+      background: none;
+      border: none;
+      padding: 0 15px;
       cursor: pointer;
+      font-size: 18px;
+    }
+    .content {
+      margin-top: 30px;
+      width: 95%;
+      max-width: 1100px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 20px;
+      color: black;
+      display: none; /* awalnya hidden */
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 15px;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 8px;
-      text-align: center; /* rata tengah semua */
+      text-align: center;
     }
     th {
-      background-color: #007bff;
+      background: #007bff;
       color: white;
     }
-    /* Perlebar kolom Nama & Jabatan */
-    td:nth-child(3), th:nth-child(3) { min-width: 200px; }
-    td:nth-child(5), th:nth-child(5) { min-width: 200px; }
+    td:nth-child(3), th:nth-child(3) { min-width: 200px; } /* Nama */
+    td:nth-child(5), th:nth-child(5) { min-width: 200px; } /* Jabatan */
   </style>
 </head>
 <body>
-  <h2>History Realisasi ID Card</h2>
-  <div style="text-align:center;">
-    <input type="text" id="searchId" placeholder="Masukkan Nomor ID">
-    <button onclick="searchData()">Cari</button>
+  <div class="overlay">
+    <h1>Check Data Realisasi All ID Card (2022–2025)</h1>
+    <div class="search-box">
+      <input type="text" id="searchId" placeholder="Input Nomer ID disini">
+      <button onclick="searchData()">🔍</button>
+    </div>
+
+    <div id="content" class="content">
+      <p id="infoText">Tambahkan sedikit teks isi</p>
+      <table id="resultTable">
+        <thead>
+          <tr>
+            <th>Tgl Pengajuan</th>
+            <th>Tgl Proses</th>
+            <th>Nama</th>
+            <th>No ID</th>
+            <th>Jabatan</th>
+            <th>Validasi</th>
+            <th>Company</th>
+            <th>Jml</th>
+            <th>Blangko</th>
+            <th>Reason</th>
+            <th>Shipment</th>
+            <th>Counter</th>
+            <th>Dicetak Oleh</th>
+            <th>Tgl Distribusi</th>
+            <th>Status Pengembalian</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
-  <table id="resultTable">
-    <thead>
-      <tr>
-        <th>Tgl Pengajuan</th>
-        <th>Tgl Proses</th>
-        <th>Nama</th>
-        <th>No ID</th>
-        <th>Jabatan</th>
-        <th>Validasi</th>
-        <th>Company</th>
-        <th>Jml</th>
-        <th>Blangko</th>
-        <th>Reason</th>
-        <th>Shipment</th>
-        <th>Counter</th>
-        <th>Dicetak Oleh</th>
-        <th>Tgl Distribusi</th>
-        <th>Status Pengembalian</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
 
   <script>
-    const API_URL = "PASTE_WEB_APP_URL_HERE"; // ganti dengan URL Web App Apps Script kamu
+    const API_URL = "https://script.google.com/macros/s/AKfycby1L8Wy0Hfkik-b4WzHIb0Ev2xeBTce67fI-Ppx40yxZIoaQbiLzh_5gA539_6sZ9hc/exec"; // ganti link Apps Script
 
-    // Format Tanggal dd-MMM-yyyy
     function formatDate(dateString) {
       if (!dateString) return "";
       const options = { day: '2-digit', month: 'short', year: 'numeric' };
       return new Date(dateString).toLocaleDateString('en-GB', options).replace(/ /g, '-');
     }
 
-    // Format Bulan-Tahun (Validasi)
     function formatMonthYear(dateString) {
       if (!dateString) return "";
       const options = { month: 'short', year: 'numeric' };
@@ -95,6 +135,9 @@
         return;
       }
 
+      document.getElementById("content").style.display = "block";
+      document.getElementById("infoText").textContent = "Sedang mencari data...";
+
       try {
         const res = await fetch(`${API_URL}?id=${id}`);
         const data = await res.json();
@@ -103,20 +146,19 @@
         tbody.innerHTML = "";
 
         if (data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="16">Data tidak ditemukan</td></tr>`;
+          document.getElementById("infoText").textContent = "Data tidak ditemukan";
           return;
         }
 
+        document.getElementById("infoText").textContent = "History pengajuan ditemukan:";
         data.forEach(row => {
           const tr = document.createElement("tr");
           row.forEach((cell, i) => {
             const td = document.createElement("td");
 
             if ([0,1,13].includes(i)) {
-              // Tgl Pengajuan, Tgl Proses, Tgl Distribusi
               td.textContent = formatDate(cell);
             } else if (i === 5) {
-              // Validasi
               td.textContent = formatMonthYear(cell);
             } else {
               td.textContent = cell;
@@ -128,7 +170,7 @@
         });
       } catch (err) {
         console.error("Error fetching data:", err);
-        alert("Gagal mengambil data. Cek koneksi atau API URL!");
+        document.getElementById("infoText").textContent = "Terjadi kesalahan saat mengambil data.";
       }
     }
   </script>
