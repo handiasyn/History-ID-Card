@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: url('https://i.imgur.com/a/peswt-IfOZcVt#NwBPawr.jpg') no-repeat center center fixed;
+      background: url('https://i.ibb.co/2ScC9yV/Hi-Richard.png') no-repeat center center fixed;
       background-size: cover;
       color: white;
     }
@@ -75,6 +75,18 @@
     }
     td:nth-child(3), th:nth-child(3) { min-width: 200px; } /* Nama */
     td:nth-child(5), th:nth-child(5) { min-width: 200px; } /* Jabatan */
+
+    /* 🚀 Hide Status Pengembalian (kolom 15) */
+    #resultTable th:nth-child(15),
+    #resultTable td:nth-child(15) {
+      display: none;
+    }
+
+    /* 🚀 Hide semua kolom setelah Status (mulai kolom 17) */
+    #resultTable th:nth-child(n+17),
+    #resultTable td:nth-child(n+17) {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -106,6 +118,10 @@
             <th>Tgl Distribusi</th>
             <th>Status Pengembalian</th>
             <th>Status</th>
+            <th>Resign</th>
+            <th>Hidden Row</th>
+            <th>Process Time</th>
+            <th>OTP</th>
           </tr>
         </thead>
         <tbody></tbody>
